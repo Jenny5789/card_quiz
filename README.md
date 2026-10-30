@@ -1,109 +1,109 @@
-# 🍊 Card Quiz
-> 나만의 단어장을 만들고 플래시카드로 학습하는 Flutter 웹 앱
+# Card Quiz
 
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+Flutter 기반 플래시카드 단어장 학습 웹 앱. 라인편집기(Line Editor)의 추가, 삭제, 수정, 출력, 저장, 불러오기 개념을 단어장 앱에 응용한 CRUD 중심 실습 프로젝트. 카드 학습, 오답 복습, 테마 설정은 부가 기능으로 구현.
+
 ![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
-![SharedPreferences](https://img.shields.io/badge/SharedPreferences-FF6F00?style=for-the-badge&logo=android&logoColor=white)
+![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
 ![Provider](https://img.shields.io/badge/Provider-6DB33F?style=for-the-badge&logo=flutter&logoColor=white)
+![SharedPreferences](https://img.shields.io/badge/SharedPreferences-FF6F00?style=for-the-badge&logo=android&logoColor=white)
 
----
+## 기술 스택
 
-## 📌 소개
+| 구분 | 기술 | 용도 |
+|---|---|---|
+| 언어 | Dart | 전체 앱 코드 |
+| 프레임워크 | Flutter (Material 3) | 화면 구성, ReorderableListView 드래그 순서 변경, Slider 글자 크기 조절, AlertDialog와 SnackBar 입력 처리 |
+| 표준 라이브러리 | dart:convert | jsonEncode, jsonDecode로 단어장 JSON 변환 |
+| 외부 라이브러리 | provider | AppSettings(ChangeNotifier)로 테마, 글자 크기, 학습 방향 전역 반영 |
+| 외부 라이브러리 | shared_preferences | 단어장, 설정, 학습 통계, 최근 학습 단어장 로컬 저장 및 앱 시작 시 로드 |
+| 외부 라이브러리 | cupertino_icons | 아이콘 |
 
-Flutter와 Dart를 사용하여 만든 **플래시카드 학습 앱**입니다.  
-나만의 단어장을 만들고 카드 뒤집기 방식으로 학습할 수 있으며,  
-테마 색상과 폰트 크기를 취향에 맞게 설정할 수 있습니다.
+## 구현 역량
 
----
+Flutter 위젯과 Provider 상태 관리 기반 CRUD 앱 구현, JSON 직렬화 후 SharedPreferences 저장. 관련 이론 문서와 코드는 [파이썬 기초 역량 정리](https://github.com/Jenny5789/python/tree/main/study_archive) 참조.
 
-## 💡 프로젝트 목적
+| 역량 | 구현 내용 | 코드 | 이론 |
+|---|---|---|---|
+| 데이터 CRUD | 단어장, 카드의 추가, 수정, 삭제, 드래그 순서 변경, 검색 구현. 앞면 빈 값 저장 방지 검증 | [핵심 코드](#핵심-코드) | [줄 편집기 insert, delete, replace, print_all](https://github.com/Jenny5789/python/blob/main/study_archive/data_structures/02_line_editor.py) |
+| 로컬 영속성 | 단어장, 설정, 통계의 SharedPreferences 저장과 시작 시 로드. 최초 실행 시 샘플 단어장 2개 생성 | [storage_service.dart](lib/services/storage_service.dart) | [줄 편집기 save, load](https://github.com/Jenny5789/python/blob/main/study_archive/data_structures/02_line_editor.py), [파일 입출력](https://github.com/Jenny5789/python/blob/main/study_archive/theory/15_file_io_csv_excel.md) |
+| 데이터 모델링과 직렬화 | Deck, CardItem 클래스 정의, toJson/fromJson 변환, 카드별 틀린 횟수(wrongCount) 저장 | [deck.dart](lib/models/deck.dart), [card_item.dart](lib/models/card_item.dart) | [클래스와 객체지향](https://github.com/Jenny5789/python/blob/main/study_archive/theory/14_classes_oop.md), [자료형(list, dict)](https://github.com/Jenny5789/python/blob/main/study_archive/theory/03_data_types.md) |
+| 상태 관리 | ChangeNotifier 상속 AppSettings를 Provider로 주입, 설정 변경의 MaterialApp 테마와 글자 크기 즉시 반영 | [app_settings.dart](lib/services/app_settings.dart), [main.dart](lib/main.dart) | [상속](https://github.com/Jenny5789/python/blob/main/study_archive/theory/14_classes_oop.md) |
+| 학습 로직 | 카드 뒤집기, 맞춤/틀림 집계, 학습 방향별 출제(앞면 먼저, 뒷면 먼저, 랜덤 shuffle), 원본 카드 복사 후 사용, 틀린 카드만 모은 오답 복습 단어장 생성 | [study_screen.dart](lib/screens/study_screen.dart), [result_screen.dart](lib/screens/result_screen.dart) | [흐름 제어](https://github.com/Jenny5789/python/blob/main/study_archive/theory/07_flow_control.md), [얕은 복사와 깊은 복사](https://github.com/Jenny5789/python/blob/main/study_archive/theory/03_data_types.md) |
+| 화면 구성 | 7개 화면 screens 폴더 분리, 최초 실행 시에만 온보딩 분기 | [main.dart](lib/main.dart), [screens](lib/screens) | [줄 편집기 print_all](https://github.com/Jenny5789/python/blob/main/study_archive/data_structures/02_line_editor.py) |
 
-라인편집기(Line Editor) 개념을 응용한 실습 프로젝트입니다.  
-라인편집기의 핵심 기능인 **추가 / 삭제 / 수정 / 순서 변경 / 저장 / 불러오기**를 단어장 앱에 적용했습니다.
+## 핵심 코드
 
-| 라인편집기 기능 | 앱 적용 |
+### 데이터 CRUD
+
+[lib/screens/card_list_screen.dart](lib/screens/card_list_screen.dart)
+
+```dart
+// 추가 (라인편집기 insert)
+widget.deck.cards.add(CardItem(
+  front: frontController.text,
+  back: backController.text,
+));
+
+// 수정 (라인편집기 replace)
+card.front = frontController.text;
+card.back = backController.text;
+
+// 삭제 (라인편집기 delete)
+widget.deck.cards.remove(card);
+
+// 순서 변경
+final card = widget.deck.cards.removeAt(oldIndex);
+widget.deck.cards.insert(newIndex, card);
+
+// 모든 변경 뒤 저장 요청
+widget.onCardsChanged();
+```
+
+- 라인편집기의 insert, replace, delete를 카드 리스트 조작으로 대응
+- 앞면이 비어 있으면 추가, 수정을 막고 SnackBar로 안내
+- 자식 화면은 onCardsChanged 콜백으로 변경만 알리고, 저장은 HomeScreen의 _onDecksChanged에서 일괄 처리
+
+## 주요 기능
+
+| 기능 | 설명 |
 |---|---|
-| `insert()` — 삽입 | 단어장 / 카드 추가 |
-| `delete()` — 삭제 | 단어장 / 카드 삭제 |
-| `replace()` — 수정 | 단어장 / 카드 수정 |
-| `print_all()` — 출력 | 목록 화면 표시 |
-| `save()` — 저장 | SharedPreferences 저장 |
-| `load()` — 불러오기 | 앱 실행 시 데이터 불러오기 |
-| 순서 변경 (확장) | 드래그로 순서 변경 |
+| 단어장 관리 | 추가, 수정, 삭제, 드래그 순서 변경, 이름 검색 |
+| 카드 관리 | 앞면과 뒷면 추가, 수정, 삭제, 드래그 순서 변경, 검색 |
+| 학습 시작 | 홈에서 단어장 선택 후 학습 시작, 카드 탭으로 뒤집기, 맞춤/틀림 체크 |
+| 학습 결과와 오답 복습 | 정답률과 틀린 카드 목록 표시, 틀린 카드만 재학습 |
+| 홈 통계 | 맞춤, 틀림 횟수와 정답률, 최근 학습 단어장 표시 |
+| 설정 | 테마 3종(제주 밭, 제주 바다, 한라 노을), 글자 크기 12px~24px, 학습 방향(앞면 먼저, 뒷면 먼저, 랜덤) |
+| 온보딩 | 최초 실행 시 사용법 안내, 건너뛰기 지원 |
 
----
+<img src="assets/images/screenshots/screenshots5.png" width="48%" alt="카드 목록">
+<img src="assets/images/screenshots/screenshots6.png" width="48%" alt="학습 결과">
 
-## 📷 실행 화면
+<details>
+<summary>전체 화면 보기</summary>
 
-| 온보딩 | 홈 화면 | 단어장 목록 |
-|-----------|-----------|-----------|
-| ![온보딩](assets/images/screenshots/screenshots1.png) | ![홈](assets/images/screenshots/screenshots2.png) | ![단어장](assets/images/screenshots/screenshots3.png) |
+**온보딩**
 
-| 단어장 선택 | 카드 목록 | 결과 화면 |
-|-----------|-----------|-----------|
-| ![카드](assets/images/screenshots/screenshots4.png) | ![선택](assets/images/screenshots/screenshots5.png) | ![결과](assets/images/screenshots/screenshots6.png) |
+<img src="assets/images/screenshots/screenshots1.png" width="600" alt="온보딩">
 
- | 학습 후 홈 화면 | 설정 화면 |
-|-----------|-----------|
-| ![홈2](assets/images/screenshots/screenshots7.png) | ![설정](assets/images/screenshots/screenshots8.png) |
+**단어장 목록**
 
----
+<img src="assets/images/screenshots/screenshots3.png" width="600" alt="단어장 목록">
 
-## ✨ 주요 기능
+**단어장 선택**
 
-- 📚 **단어장 관리** — 단어장 추가 / 수정 / 삭제 / 드래그 순서 변경
-- 🃏 **카드 관리** — 카드 추가 / 수정 / 삭제 / 드래그 순서 변경
-- 🔍 **검색** — 단어장 및 카드 검색
-- 🎴 **카드 뒤집기 학습** — 탭으로 앞/뒤 전환, 맞춤/틀림 체크
-- ✅ **오답 복습** — 틀린 카드만 모아 다시 학습
-- 🏆 **학습 결과** — 정답률 및 틀린 카드 목록 확인
-- 🎨 **테마 3종** — 제주 밭 / 제주 바다 / 한라 노을
-- 🔤 **폰트 크기 조절** — 설정에서 글자 크기 변경
-- 🔀 **학습 방향** — 앞→뒤 / 뒤→앞 / 랜덤
-- 🗺️ **온보딩** — 첫 실행 시 사용법 안내
+<img src="assets/images/screenshots/screenshots4.png" width="600" alt="단어장 선택">
 
----
+**학습 후 홈 화면**
 
-## 🎮 사용법
+<img src="assets/images/screenshots/screenshots7.png" width="600" alt="학습 후 홈">
 
-### 단어장 만들기
-```
-홈 화면에서 단어장 목록 클릭
-우측 하단 + 버튼 클릭
-단어장 이름 입력 후 추가 클릭
-```
+**설정**
 
-### 카드 추가하기
-```
-단어장 목록에서 원하는 단어장 클릭
-하단 + 버튼 클릭
-앞면(질문/단어)과 뒷면(답/뜻) 입력 후 추가 클릭
-```
+<img src="assets/images/screenshots/screenshots8.png" width="600" alt="설정">
 
-### 학습하기
-```
-카드 목록 하단 학습 시작 버튼 클릭
-카드를 탭해서 뒤집기
-맞으면 맞춤, 틀리면 틀림 버튼 클릭
-```
+</details>
 
-### 결과 확인하기
-```
-학습 완료 후 정답률 확인
-틀린 카드 목록 확인
-오답 복습으로 틀린 카드만 다시 학습
-```
-
-### 설정
-```
-홈 화면 우측 상단 ⚙️ 버튼 클릭
-테마 색상 / 폰트 크기 / 학습 방향 변경
-설정 저장 버튼 클릭
-```
-
----
-
-## 🗂️ 파일 구조
+## 파일 구조
 
 ```
 card_quiz/
@@ -126,28 +126,15 @@ card_quiz/
 │       ├── result_screen.dart
 │       ├── settings_screen.dart
 │       └── onboarding_screen.dart
-├── assets/
-│   └── images/
+├── assets/images/
 └── pubspec.yaml
 ```
 
----
+플랫폼 폴더(android, ios, web 등) 생략.
 
-## 🚀 배포 링크
+## 실행 방법
 
-🔗 [카드 퀴즈 바로가기](#) <!-- 배포 후 링크 추가 -->
-
----
-
-## 🛠️ 기술 스택
-
-- **Language** — Dart
-- **UI Framework** — Flutter
-- **State Management** — Provider
-- **Local Storage** — SharedPreferences
-
----
-
-## 👩‍💻 개발자
-
-- GitHub: [@Jenny5789](https://github.com/Jenny5789)
+```
+flutter pub get
+flutter run -d chrome
+```
