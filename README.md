@@ -7,6 +7,13 @@ Flutter 기반 플래시카드 단어장 학습 웹 앱. 라인편집기(Line Ed
 ![Provider](https://img.shields.io/badge/Provider-6DB33F?style=for-the-badge&logo=flutter&logoColor=white)
 ![SharedPreferences](https://img.shields.io/badge/SharedPreferences-FF6F00?style=for-the-badge&logo=android&logoColor=white)
 
+## 스크린샷
+
+| | | | |
+|---|---|---|---|
+| ![](assets/images/screenshots/screenshots1.png) | ![](assets/images/screenshots/screenshots2.png) | ![](assets/images/screenshots/screenshots3.png) | ![](assets/images/screenshots/screenshots4.png) |
+| ![](assets/images/screenshots/screenshots5.png) | ![](assets/images/screenshots/screenshots6.png) | ![](assets/images/screenshots/screenshots7.png) | ![](assets/images/screenshots/screenshots8.png) |
+
 ## 기술 스택
 
 | 구분 | 기술 | 용도 |
