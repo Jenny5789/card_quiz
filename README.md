@@ -1,4 +1,4 @@
-# Card Quiz
+# Card Quiz &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small><small><small>2026.06</small></small></small>
 
 Flutter로 만든 플래시카드 단어장 학습 웹 앱.
 
@@ -37,18 +37,15 @@ widget.deck.cards.remove(card);
 final card = widget.deck.cards.removeAt(oldIndex);
 widget.deck.cards.insert(newIndex, card);
 
-// 모든 변경 뒤 저장 요청
+// 변경만 알리고, 저장은 HomeScreen에서 한 번에 처리
 widget.onCardsChanged();
 ```
-
-- 앞면이 비어 있으면 추가, 수정을 막고 SnackBar로 안내
-- 자식 화면은 onCardsChanged 콜백으로 변경만 알리고, 저장은 HomeScreen에서 한 번에 처리
 
 ### 저장과 불러오기
 
 [storage_service.dart](lib/services/storage_service.dart) · [deck.dart](lib/models/deck.dart) · [이론 정리: 클래스와 객체지향](https://github.com/Jenny5789/python/blob/main/study_archive/theory/14_classes_oop.md)
 
-줄 편집기의 save, load처럼 단어장 전체를 JSON 문자열로 바꿔 브라우저 저장소(SharedPreferences)에 저장하고, 앱을 켤 때 다시 객체로 복원.
+줄 편집기의 save, load처럼 단어장 전체를 JSON 문자열로 바꿔 저장하고, 앱을 켤 때 다시 객체로 복원.
 
 ```dart
 static Future<void> saveDecks(List<Deck> decks) async {
@@ -60,29 +57,25 @@ static Future<void> saveDecks(List<Deck> decks) async {
 static Future<List<Deck>> loadDecks() async {
   final prefs = await SharedPreferences.getInstance();
   final json = prefs.getString(_decksKey);
-  if (json == null) {                       // 처음 실행이면 샘플 단어장 생성
+  if (json == null) {                       // 처음 실행이면 샘플 단어장 2개 생성
     final sampleDecks = _createSampleDecks();
     await saveDecks(sampleDecks);
     return sampleDecks;
   }
+  // Deck.fromJson으로 JSON을 다시 객체로 변환
   return (jsonDecode(json) as List).map((d) => Deck.fromJson(d)).toList();
 }
 ```
 
-- Deck, CardItem 클래스에 toJson, fromJson을 두어 객체와 JSON을 서로 변환
-- 처음 실행하면 샘플 단어장 2개(자료구조, 파이썬 기초) 생성
-
 ## 주요 기능
-
-테마, 글자 크기, 학습 방향은 ChangeNotifier를 [상속](https://github.com/Jenny5789/python/blob/main/study_archive/theory/14_classes_oop.md)한 AppSettings를 Provider로 주입해 앱 전체에 바로 반영.
 
 | 기능 | 설명 |
 |---|---|
-| 단어장, 카드 관리 | 추가, 수정, 삭제, 드래그 순서 변경, 검색 |
+| 단어장, 카드 관리 | 추가, 수정, 삭제, 드래그 순서 변경, 검색<br>앞면이 비어 있으면 저장을 막고 안내 |
 | 학습 | 카드를 탭해 뒤집고 맞춤/틀림 체크<br>학습 방향: 앞→뒤, 뒤→앞(앞뒤를 바꾼 복사본으로 출제), 랜덤(shuffle) |
 | 학습 결과, 오답 복습 | 정답률과 틀린 카드 목록 표시, 틀린 카드만 모아 다시 학습 |
 | 오늘의 학습 통계 | 홈 화면에 맞춤, 틀림, 정답률, 최근 학습한 단어장 표시 |
-| 설정 | 테마 색상 3종(제주 밭, 제주 바다, 한라 노을), 글자 크기, 학습 방향 |
+| 설정 | 테마 색상 3종(제주 밭, 제주 바다, 한라 노을), 글자 크기, 학습 방향<br>ChangeNotifier를 [상속](https://github.com/Jenny5789/python/blob/main/study_archive/theory/14_classes_oop.md)한 AppSettings를 Provider로 주입해 앱 전체에 바로 반영 |
 | 온보딩 | 첫 실행 시 앱 사용법 안내 |
 
 <details>
