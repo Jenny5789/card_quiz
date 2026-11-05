@@ -1,4 +1,4 @@
-# Card Quiz &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small><small><small>2026.06</small></small></small>
+# Card Quiz &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<small><small><small>2026.06</small></small></small>
 
 Flutter로 만든 플래시카드 단어장 학습 웹 앱.
 
